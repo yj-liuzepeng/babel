@@ -1,0 +1,14 @@
+{
+  "name": "babel-codeframe",
+  "version": "1.0.0",
+  "description": "Code- Frame 和代码高亮原理",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/code-frame": "^7.22.13"
+  }
+}
