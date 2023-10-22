@@ -3,6 +3,7 @@ const fse = require('fs-extra');
 const path = require('path');
 const generate = require('@babel/generator').default;
 
+//  key 也需要生成唯一的
 let intlIndex = 0;
 function nextIntlKey() {
     ++intlIndex;
@@ -24,7 +25,7 @@ const autoTrackPlugin = declare((api, options, dirname) => {
         }
         return replaceExpression;
     }
-
+    // 收集替换的 key 和 value，保存到 file 中
     function save(file, key, value) {
         const allText = file.get('allText');
         allText.push({
@@ -50,12 +51,14 @@ const autoTrackPlugin = declare((api, options, dirname) => {
                         }
                     });
                     if (!imported) {
+                        // 设置自动引入
                         const uid = path.scope.generateUid('intl');
                         const importAst = api.template.ast(`import ${uid} from 'intl'`);
                         path.node.body.unshift(importAst);
                         state.intlUid = uid;
                     }
-
+                    // 对所有的有 /*i18n-disable*/ 注释的字符串和模版字符串节点打个标记，
+                    // 用于之后跳过处理。然后把这个注释节点从 ast 中去掉
                     path.traverse({
                         'StringLiteral|TemplateLiteral'(path) {
                             if(path.node.leadingComments) {
@@ -74,17 +77,20 @@ const autoTrackPlugin = declare((api, options, dirname) => {
                     });
                 }
             },
+            // 处理 StringLiteral节点
             StringLiteral(path, state) {
                 if (path.node.skipTransform) {
                     return;
                 }
                 let key = nextIntlKey();
                 save(state.file, key, path.node.value);
-
+                // getReplaceExpression 是生成替换节点的一个方法
                 const replaceExpression = getReplaceExpression(path, key, state.intlUid);
                 path.replaceWith(replaceExpression);
+                // 替换完以后要用 path.skip 跳过新生成节点的处理，不然就会进入无限循环
                 path.skip();
             },
+            // 处理TemplateLiteral 节点
             TemplateLiteral(path, state) {
                 if (path.node.skipTransform) {
                     return;
