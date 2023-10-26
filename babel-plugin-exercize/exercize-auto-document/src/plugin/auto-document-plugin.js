@@ -4,6 +4,7 @@ const fse = require('fs-extra');
 const path = require('path');
 const renderer = require('./renderer');
 
+// 解析注释里的 @xxx 信息
 function parseComment(commentStr) {
     if (!commentStr) {
         return;
@@ -32,6 +33,7 @@ function generate(docs, format = 'json') {
     }
 }
 
+// 处理类型-更易读
 function resolveType(tsType) {
     const typeAnnotation = tsType.typeAnnotation;
     if (!typeAnnotation) {
