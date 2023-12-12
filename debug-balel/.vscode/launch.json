@@ -7,7 +7,7 @@
     {
       "type": "node",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/index.js",
+      "program": "index.js",
       "request": "launch",
       "skipFiles": [
         "<node_internals>/**"
@@ -15,7 +15,8 @@
       "console": "integratedTerminal",
       "resolveSourceMapLocations":[
         "${workspaceFolder}/**"
-      ]
+      ],
+      "cwd": "${workspaceFolder}/babel-test"
     },
     {
       "type": "node",
